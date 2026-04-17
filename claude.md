@@ -6,3 +6,6 @@
 5. At every step give me a high level explanation of what you changed.
 6. Keep every change simple and minimal. Avoid big rewrites.
 7. At the eng add the reviwe stctiom in todo.md summarizing the changes.
+8. Always begin git commit message with a relevant emoji.
+9. Go through the code you just wrote and ​confirm it follows security best practices. ​Check that no sensitive data is left in the front end and that ​there are no vulnerabilities an attacker could exploit. 
+

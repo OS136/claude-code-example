@@ -26,11 +26,15 @@ Single-page HTML site with a premium agency aesthetic:
 
 ## Push to GitHub Plan
 
-- [ ] `git init` — initialize local git repository
-- [ ] `git add` — stage all project files (index.html, claude.md, task.todo.md)
-- [ ] `git commit` — create initial commit
-- [ ] `gh repo create` — create new GitHub repo named `claude-code-example` (private by default)
-- [ ] `git push` — push main branch to GitHub remote
+- [x] `git init` — initialize local git repository
+- [x] `git add` — stage all project files (index.html, claude.md, task.todo.md)
+- [x] `git commit` — create initial commit
+- [x] `gh repo create` — create new GitHub repo named `claude-code-example` (public)
+- [x] `git push` — push main branch to GitHub remote
+
+## Review (Push to GitHub)
+
+Initialized a new git repo, committed all 3 project files (`index.html`, `claude.md`, `task.todo.md`), and pushed to a new public GitHub repo at https://github.com/OS136/claude-code-example.
 
 ## Review
 
