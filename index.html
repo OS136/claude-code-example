@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Synapse — Learn AI from the Ground Up</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #09090f;
+      --surface:  #111120;
+      --border:   rgba(255,255,255,0.07);
+      --blue:     #4f8ef7;
+      --violet:   #9b5de5;
+      --cyan:     #00d4ff;
+      --text:     #f0f0f8;
+      --muted:    #7a7a9a;
+      --grad:     linear-gradient(135deg, #4f8ef7 0%, #9b5de5 100%);
+      --grad-soft: linear-gradient(135deg, rgba(79,142,247,.15) 0%, rgba(155,93,229,.15) 100%);
+      --radius:   16px;
+      --font:     'Inter', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Utility ──────────────────────────────────────────────── */
+    .container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+    .tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 600; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--blue);
+      background: rgba(79,142,247,.12); border: 1px solid rgba(79,142,247,.25);
+      border-radius: 100px; padding: 5px 14px;
+    }
+    .tag::before { content: ''; display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--blue); }
+
+    h2.section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -.02em;
+      margin: 16px 0 12px;
+    }
+    p.section-sub {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.7;
+    }
+    .grad-text {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── Nav ──────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 18px 0;
+      background: rgba(9,9,15,.85);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo {
+      font-size: 1.25rem; font-weight: 800; letter-spacing: -.03em;
+      text-decoration: none; color: var(--text);
+    }
+    .logo span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--muted); font-size: .9rem; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 22px; border-radius: 100px;
+      font-family: var(--font); font-size: .875rem; font-weight: 600;
+      cursor: pointer; text-decoration: none; transition: opacity .2s, transform .15s;
+      border: none; outline: none;
+    }
+    .btn:hover { opacity: .88; transform: translateY(-1px); }
+    .btn-primary { background: var(--grad); color: #fff; }
+    .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: rgba(255,255,255,.2); }
+
+    /* ── Hero ─────────────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 120px 0 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero-glow {
+      position: absolute; top: -200px; right: -200px;
+      width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(155,93,229,.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-glow-2 {
+      position: absolute; bottom: -150px; left: -100px;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(79,142,247,.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .hero-eyebrow { margin-bottom: 24px; }
+    .hero-title {
+      font-size: clamp(2.6rem, 5.5vw, 4.2rem);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -.04em;
+      margin-bottom: 24px;
+    }
+    .hero-sub {
+      font-size: 1.1rem; color: var(--muted); line-height: 1.75;
+      margin-bottom: 40px; max-width: 480px;
+    }
+    .hero-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .hero-stats { display: flex; gap: 36px; margin-top: 56px; }
+    .stat-item { }
+    .stat-num { font-size: 1.8rem; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+    .stat-label { font-size: .8rem; color: var(--muted); margin-top: 4px; }
+
+    /* Neural network SVG mockup */
+    .hero-visual {
+      position: relative; display: flex; justify-content: center; align-items: center;
+    }
+    .neural-wrap {
+      width: 100%; max-width: 480px; aspect-ratio: 1;
+      position: relative;
+    }
+    .neural-bg {
+      position: absolute; inset: 0; border-radius: 32px;
+      background: var(--grad-soft);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(4px);
+    }
+    .neural-svg { width: 100%; height: 100%; position: relative; z-index: 1; }
+
+    /* floating badge */
+    .float-badge {
+      position: absolute;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 10px 16px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: .78rem; font-weight: 600;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+      animation: floatY 4s ease-in-out infinite;
+    }
+    .float-badge:nth-child(3) { bottom: 60px; left: -30px; animation-delay: 2s; }
+    .float-badge:nth-child(4) { top: 50px; right: -20px; }
+    .badge-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    @keyframes floatY {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-10px); }
+    }
+
+    /* ── Features ─────────────────────────────────────────────── */
+    #features {
+      padding: 120px 0;
+      border-top: 1px solid var(--border);
+    }
+    .features-header { margin-bottom: 60px; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      transition: border-color .25s, transform .25s;
+      position: relative; overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--grad); opacity: 0;
+      transition: opacity .25s;
+    }
+    .feature-card:hover { border-color: rgba(79,142,247,.3); transform: translateY(-4px); }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 24px; font-size: 1.5rem;
+    }
+    .feature-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; }
+    .feature-card p { font-size: .9rem; color: var(--muted); line-height: 1.7; }
+
+    /* ── Courses ──────────────────────────────────────────────── */
+    #courses { padding: 120px 0; }
+    .courses-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 52px; gap: 24px; flex-wrap: wrap;
+    }
+    .courses-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
+    .course-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      transition: transform .25s, border-color .25s;
+    }
+    .course-card:hover { transform: translateY(-5px); border-color: rgba(79,142,247,.25); }
+    .course-thumb {
+      height: 200px; position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .course-thumb-label {
+      position: absolute; bottom: 14px; left: 14px;
+      font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      background: rgba(0,0,0,.6); color: #fff; padding: 4px 10px;
+      border-radius: 100px; backdrop-filter: blur(6px);
+    }
+    .course-body { padding: 24px 28px 28px; }
+    .course-meta { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+    .course-level {
+      font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--blue); background: rgba(79,142,247,.1);
+      padding: 3px 10px; border-radius: 100px;
+    }
+    .course-duration { font-size: .8rem; color: var(--muted); }
+    .course-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
+    .course-card p { font-size: .875rem; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
+    .course-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 18px; border-top: 1px solid var(--border);
+    }
+    .course-instructor { display: flex; align-items: center; gap: 10px; }
+    .avatar-sm {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .65rem; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .instructor-name { font-size: .8rem; font-weight: 600; }
+    .course-rating { font-size: .82rem; color: var(--muted); }
+    .course-rating strong { color: var(--text); }
+
+    /* ── Testimonials ─────────────────────────────────────────── */
+    #testimonials {
+      padding: 120px 0;
+      border-top: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    .testi-glow {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 600px; height: 400px;
+      background: radial-gradient(ellipse, rgba(155,93,229,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .testi-header { text-align: center; margin-bottom: 60px; }
+    .testi-header p.section-sub { margin: 0 auto; }
+    .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; position: relative; z-index: 1; }
+    .testi-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 32px;
+    }
+    .testi-stars { color: #fbbf24; font-size: .9rem; margin-bottom: 16px; letter-spacing: 2px; }
+    .testi-card blockquote {
+      font-size: .95rem; line-height: 1.75; color: var(--muted);
+      margin-bottom: 24px; font-style: normal;
+    }
+    .testi-author { display: flex; align-items: center; gap: 12px; }
+    .avatar-md {
+      width: 42px; height: 42px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .author-name { font-size: .9rem; font-weight: 700; }
+    .author-role { font-size: .78rem; color: var(--muted); }
+
+    /* ── CTA ──────────────────────────────────────────────────── */
+    #cta { padding: 120px 0; }
+    .cta-box {
+      border-radius: 28px;
+      background: var(--grad-soft);
+      border: 1px solid rgba(79,142,247,.2);
+      padding: 80px 60px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .cta-box::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234f8ef7' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    .cta-box h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; letter-spacing: -.03em; margin-bottom: 16px; }
+    .cta-box p { font-size: 1.05rem; color: var(--muted); margin-bottom: 40px; }
+    .cta-form {
+      display: flex; gap: 12px; justify-content: center;
+      max-width: 480px; margin: 0 auto; flex-wrap: wrap;
+    }
+    .cta-form input {
+      flex: 1; min-width: 220px;
+      background: rgba(255,255,255,.06); border: 1px solid var(--border);
+      border-radius: 100px; padding: 12px 22px;
+      color: var(--text); font-family: var(--font); font-size: .9rem;
+      outline: none; transition: border-color .2s;
+    }
+    .cta-form input::placeholder { color: var(--muted); }
+    .cta-form input:focus { border-color: rgba(79,142,247,.5); }
+    .cta-note { font-size: .78rem; color: var(--muted); margin-top: 14px; }
+
+    /* ── Footer ───────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 60px 0 40px;
+    }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+    .footer-brand p { font-size: .875rem; color: var(--muted); margin-top: 12px; max-width: 260px; line-height: 1.7; }
+    .footer-col h4 { font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col a { text-decoration: none; color: var(--muted); font-size: .875rem; transition: color .2s; }
+    .footer-col a:hover { color: var(--text); }
+    .footer-bottom {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 32px; border-top: 1px solid var(--border);
+      font-size: .8rem; color: var(--muted); flex-wrap: wrap; gap: 12px;
+    }
+
+    /* ── Responsive ───────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .hero-grid, .features-grid, .testi-grid { grid-template-columns: 1fr 1fr; }
+      .hero-grid { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .features-grid, .courses-grid, .testi-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .cta-box { padding: 48px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ──────────────────────────────────────────────────── -->
+<nav>
+  <div class="container nav-inner">
+    <a href="#" class="logo"><span>Synapse</span> AI</a>
+    <ul class="nav-links">
+      <li><a href="#features">Learn</a></li>
+      <li><a href="#courses">Courses</a></li>
+      <li><a href="#testimonials">Stories</a></li>
+    </ul>
+    <a href="#cta" class="btn btn-primary">Start Free</a>
+  </div>
+</nav>
+
+<!-- ── Hero ─────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+  <div class="container hero-grid">
+
+    <!-- Left: copy -->
+    <div>
+      <div class="hero-eyebrow">
+        <span class="tag">AI Education Platform</span>
+      </div>
+      <h1 class="hero-title">
+        Master AI.<br>
+        <span class="grad-text">Shape the Future.</span>
+      </h1>
+      <p class="hero-sub">
+        From neural networks to large language models — learn AI the way industry practitioners actually build it, with hands-on projects and world-class mentors.
+      </p>
+      <div class="hero-actions">
+        <a href="#courses" class="btn btn-primary">Explore Courses</a>
+        <a href="#features" class="btn btn-ghost">How it works</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num grad-text">48K+</div>
+          <div class="stat-label">Active learners</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num grad-text">120+</div>
+          <div class="stat-label">Courses</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num grad-text">94%</div>
+          <div class="stat-label">Completion rate</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: neural net illustration -->
+    <div class="hero-visual">
+      <div class="neural-wrap">
+        <div class="neural-bg"></div>
+        <svg class="neural-svg" viewBox="0 0 480 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- grid lines -->
+          <line x1="0" y1="240" x2="480" y2="240" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="240" y1="0" x2="240" y2="480" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+
+          <!-- connection lines layer 1→2 -->
+          <line x1="100" y1="120" x2="200" y2="100" stroke="url(#lg1)" stroke-width="1.5" stroke-opacity=".5"/>
+          <line x1="100" y1="120" x2="200" y2="200" stroke="url(#lg1)" stroke-width="1.5" stroke-opacity=".5"/>
+          <line x1="100" y1="120" x2="200" y2="300" stroke="url(#lg1)" stroke-width="1.5" stroke-opacity=".3"/>
+          <line x1="100" y1="240" x2="200" y2="100" stroke="url(#lg1)" stroke-width="1.5" stroke-opacity=".3"/>
+          <line x1="100" y1="240" x2="200" y2="200" stroke="url(#lg1)" stroke-width="1.5" stroke-opacity=".5"/>
+          <line x1="100" y1="240" x2="200" y2="300" stroke="url(#lg1)" stroke-width="1.5" stroke-opacity=".5"/>
+          <line x1="100" y1="240" x2="200" y2="380" stroke="url(#lg1)" stroke-width="1.5" stroke-opacity=".3"/>
+          <line x1="100" y1="360" x2="200" y2="200" stroke="url(#lg1)" stroke-width="1.5" stroke-opacity=".3"/>
+          <line x1="100" y1="360" x2="200" y2="300" stroke="url(#lg1)" stroke-width="1.5" stroke-opacity=".5"/>
+          <line x1="100" y1="360" x2="200" y2="380" stroke="url(#lg1)" stroke-width="1.5" stroke-opacity=".5"/>
+
+          <!-- connection lines layer 2→3 -->
+          <line x1="200" y1="100" x2="300" y2="160" stroke="url(#lg2)" stroke-width="1.5" stroke-opacity=".5"/>
+          <line x1="200" y1="100" x2="300" y2="300" stroke="url(#lg2)" stroke-width="1.5" stroke-opacity=".2"/>
+          <line x1="200" y1="200" x2="300" y2="160" stroke="url(#lg2)" stroke-width="1.5" stroke-opacity=".5"/>
+          <line x1="200" y1="200" x2="300" y2="300" stroke="url(#lg2)" stroke-width="1.5" stroke-opacity=".5"/>
+          <line x1="200" y1="300" x2="300" y2="160" stroke="url(#lg2)" stroke-width="1.5" stroke-opacity=".3"/>
+          <line x1="200" y1="300" x2="300" y2="300" stroke="url(#lg2)" stroke-width="1.5" stroke-opacity=".5"/>
+          <line x1="200" y1="380" x2="300" y2="300" stroke="url(#lg2)" stroke-width="1.5" stroke-opacity=".5"/>
+          <line x1="200" y1="380" x2="300" y2="160" stroke="url(#lg2)" stroke-width="1.5" stroke-opacity=".2"/>
+
+          <!-- connection lines layer 3→4 -->
+          <line x1="300" y1="160" x2="390" y2="240" stroke="url(#lg3)" stroke-width="2" stroke-opacity=".7"/>
+          <line x1="300" y1="300" x2="390" y2="240" stroke="url(#lg3)" stroke-width="2" stroke-opacity=".7"/>
+
+          <!-- Layer 1 nodes -->
+          <circle cx="100" cy="120" r="14" fill="#111120" stroke="url(#lg1)" stroke-width="2"/>
+          <circle cx="100" cy="120" r="7" fill="url(#lg1)" opacity=".8"/>
+          <circle cx="100" cy="240" r="14" fill="#111120" stroke="url(#lg1)" stroke-width="2"/>
+          <circle cx="100" cy="240" r="7" fill="url(#lg1)" opacity=".8"/>
+          <circle cx="100" cy="360" r="14" fill="#111120" stroke="url(#lg1)" stroke-width="2"/>
+          <circle cx="100" cy="360" r="7" fill="url(#lg1)" opacity=".8"/>
+
+          <!-- Layer 2 nodes -->
+          <circle cx="200" cy="100" r="14" fill="#111120" stroke="url(#lg2)" stroke-width="2"/>
+          <circle cx="200" cy="100" r="7" fill="url(#lg2)" opacity=".7"/>
+          <circle cx="200" cy="200" r="16" fill="#111120" stroke="url(#lg2)" stroke-width="2.5"/>
+          <circle cx="200" cy="200" r="8" fill="url(#lg2)" opacity=".9"/>
+          <circle cx="200" cy="300" r="14" fill="#111120" stroke="url(#lg2)" stroke-width="2"/>
+          <circle cx="200" cy="300" r="7" fill="url(#lg2)" opacity=".7"/>
+          <circle cx="200" cy="380" r="14" fill="#111120" stroke="url(#lg2)" stroke-width="2"/>
+          <circle cx="200" cy="380" r="7" fill="url(#lg2)" opacity=".7"/>
+
+          <!-- Layer 3 nodes -->
+          <circle cx="300" cy="160" r="16" fill="#111120" stroke="url(#lg3)" stroke-width="2.5"/>
+          <circle cx="300" cy="160" r="8" fill="url(#lg3)" opacity=".9"/>
+          <circle cx="300" cy="300" r="16" fill="#111120" stroke="url(#lg3)" stroke-width="2.5"/>
+          <circle cx="300" cy="300" r="8" fill="url(#lg3)" opacity=".9"/>
+
+          <!-- Output node -->
+          <circle cx="390" cy="240" r="20" fill="#111120" stroke="url(#lgOut)" stroke-width="3"/>
+          <circle cx="390" cy="240" r="10" fill="url(#lgOut)"/>
+          <circle cx="390" cy="240" r="20" fill="url(#lgOut)" opacity=".12"/>
+
+          <!-- Pulse rings on output -->
+          <circle cx="390" cy="240" r="28" stroke="url(#lgOut)" stroke-width="1" fill="none" opacity=".3">
+            <animate attributeName="r" values="20;38" dur="2s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".4;0" dur="2s" repeatCount="indefinite"/>
+          </circle>
+
+          <!-- Gradients -->
+          <defs>
+            <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#4f8ef7"/>
+              <stop offset="100%" stop-color="#9b5de5"/>
+            </linearGradient>
+            <linearGradient id="lg2" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#9b5de5"/>
+              <stop offset="100%" stop-color="#00d4ff"/>
+            </linearGradient>
+            <linearGradient id="lg3" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#00d4ff"/>
+              <stop offset="100%" stop-color="#4f8ef7"/>
+            </linearGradient>
+            <linearGradient id="lgOut" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#4f8ef7"/>
+              <stop offset="100%" stop-color="#9b5de5"/>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <!-- Floating badges -->
+        <div class="float-badge" style="bottom:60px; left:-30px;">
+          <div class="badge-dot" style="background:#22c55e;"></div>
+          Model training · 98.2% acc
+        </div>
+        <div class="float-badge" style="top:50px; right:-20px;">
+          <div class="badge-dot" style="background:#4f8ef7;"></div>
+          Live inference · 4ms
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Features ──────────────────────────────────────────────── -->
+<section id="features">
+  <div class="container">
+    <div class="features-header">
+      <span class="tag">Why Synapse</span>
+      <h2 class="section-title">Everything you need<br>to become AI-fluent</h2>
+      <p class="section-sub">A curriculum built with leading AI researchers and engineers — covering theory, code, and production systems.</p>
+    </div>
+    <div class="features-grid">
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(79,142,247,.1);">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <h3>Structured Learning Paths</h3>
+        <p>Curated progressions from ML fundamentals to cutting-edge architectures like transformers and diffusion models.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(155,93,229,.1);">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#9b5de5" stroke-width="2" stroke-linecap="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+        </div>
+        <h3>Interactive Notebooks</h3>
+        <p>Write and run real Python code directly in your browser — no setup required. Instant feedback on every experiment.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(0,212,255,.1);">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+          </svg>
+        </div>
+        <h3>Self-Paced, Always On</h3>
+        <p>Learn on your schedule. Lifetime access to all course materials and future updates — no deadlines, no pressure.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(251,191,36,.1);">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <h3>Expert Mentorship</h3>
+        <p>Weekly live Q&amp;A sessions with instructors from Google Brain, OpenAI, and Hugging Face. Real practitioners, real answers.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(34,197,94,.1);">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </div>
+        <h3>Portfolio Projects</h3>
+        <p>Build real AI systems — image classifiers, chatbots, recommendation engines — to showcase to employers.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(244,63,94,.1);">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <h3>Verified Certificates</h3>
+        <p>Earn industry-recognized credentials on completion. Share directly to LinkedIn with one click.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Courses ────────────────────────────────────────────────── -->
+<section id="courses">
+  <div class="container">
+    <div class="courses-header">
+      <div>
+        <span class="tag">Curriculum</span>
+        <h2 class="section-title" style="margin-bottom:0;">Popular courses</h2>
+      </div>
+      <a href="#" class="btn btn-ghost">View all 120+ →</a>
+    </div>
+
+    <div class="courses-grid">
+
+      <!-- Course 1 -->
+      <div class="course-card">
+        <div class="course-thumb" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);">
+          <svg width="120" height="80" viewBox="0 0 120 80" fill="none">
+            <circle cx="20" cy="40" r="8" fill="rgba(79,142,247,.6)"/>
+            <circle cx="60" cy="20" r="8" fill="rgba(79,142,247,.6)"/>
+            <circle cx="60" cy="60" r="8" fill="rgba(79,142,247,.6)"/>
+            <circle cx="100" cy="40" r="10" fill="rgba(155,93,229,.9)"/>
+            <line x1="28" y1="40" x2="52" y2="22" stroke="rgba(79,142,247,.5)" stroke-width="1.5"/>
+            <line x1="28" y1="40" x2="52" y2="58" stroke="rgba(79,142,247,.5)" stroke-width="1.5"/>
+            <line x1="68" y1="22" x2="90" y2="38" stroke="rgba(155,93,229,.6)" stroke-width="1.5"/>
+            <line x1="68" y1="58" x2="90" y2="42" stroke="rgba(155,93,229,.6)" stroke-width="1.5"/>
+          </svg>
+          <span class="course-thumb-label">Deep Learning</span>
+        </div>
+        <div class="course-body">
+          <div class="course-meta">
+            <span class="course-level">Beginner</span>
+            <span class="course-duration">32 hours · 48 lessons</span>
+          </div>
+          <h3>Neural Networks & Deep Learning Fundamentals</h3>
+          <p>Build intuition for how neural networks learn, then implement them from scratch using Python and NumPy.</p>
+          <div class="course-footer">
+            <div class="course-instructor">
+              <div class="avatar-sm" style="background: linear-gradient(135deg,#4f8ef7,#9b5de5);">AK</div>
+              <span class="instructor-name">Dr. Amir Khan</span>
+            </div>
+            <div class="course-rating">★ <strong>4.9</strong> (2.4k)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course 2 -->
+      <div class="course-card">
+        <div class="course-thumb" style="background: linear-gradient(135deg, #0c1a0e 0%, #052e16 50%, #14532d 100%);">
+          <svg width="130" height="80" viewBox="0 0 130 80" fill="none">
+            <rect x="10" y="25" width="18" height="30" rx="3" fill="rgba(34,197,94,.5)"/>
+            <rect x="36" y="15" width="18" height="40" rx="3" fill="rgba(34,197,94,.6)"/>
+            <rect x="62" y="30" width="18" height="25" rx="3" fill="rgba(34,197,94,.5)"/>
+            <rect x="88" y="10" width="18" height="55" rx="3" fill="rgba(34,197,94,.8)"/>
+            <polyline points="10,55 36,40 62,48 88,18" stroke="rgba(0,212,255,.7)" stroke-width="2" fill="none"/>
+            <circle cx="10" cy="55" r="3" fill="#00d4ff"/>
+            <circle cx="36" cy="40" r="3" fill="#00d4ff"/>
+            <circle cx="62" cy="48" r="3" fill="#00d4ff"/>
+            <circle cx="88" cy="18" r="3" fill="#00d4ff"/>
+          </svg>
+          <span class="course-thumb-label">Machine Learning</span>
+        </div>
+        <div class="course-body">
+          <div class="course-meta">
+            <span class="course-level">Intermediate</span>
+            <span class="course-duration">28 hours · 36 lessons</span>
+          </div>
+          <h3>Machine Learning with Scikit-Learn & XGBoost</h3>
+          <p>Master classical ML algorithms — regression, classification, clustering — and win Kaggle competitions.</p>
+          <div class="course-footer">
+            <div class="course-instructor">
+              <div class="avatar-sm" style="background: linear-gradient(135deg,#22c55e,#06b6d4);">SL</div>
+              <span class="instructor-name">Sofia Larsson</span>
+            </div>
+            <div class="course-rating">★ <strong>4.8</strong> (1.8k)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course 3 -->
+      <div class="course-card">
+        <div class="course-thumb" style="background: linear-gradient(135deg, #1a0a2e 0%, #2d1657 50%, #4c1d95 100%);">
+          <svg width="140" height="80" viewBox="0 0 140 80" fill="none">
+            <rect x="5" y="30" width="28" height="22" rx="4" fill="rgba(155,93,229,.3)" stroke="rgba(155,93,229,.7)" stroke-width="1"/>
+            <text x="19" y="45" font-size="9" fill="rgba(155,93,229,.9)" text-anchor="middle">GPT</text>
+            <rect x="45" y="22" width="28" height="22" rx="4" fill="rgba(155,93,229,.3)" stroke="rgba(155,93,229,.7)" stroke-width="1"/>
+            <text x="59" y="37" font-size="9" fill="rgba(155,93,229,.9)" text-anchor="middle">Bert</text>
+            <rect x="85" y="14" width="50" height="28" rx="4" fill="rgba(79,142,247,.2)" stroke="rgba(79,142,247,.8)" stroke-width="1.5"/>
+            <text x="110" y="31" font-size="9" fill="rgba(79,142,247,.9)" text-anchor="middle">Transformer</text>
+            <path d="M33 41 Q44 41 45 33" stroke="rgba(155,93,229,.5)" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+            <path d="M73 33 Q84 28 85 28" stroke="rgba(79,142,247,.5)" stroke-width="1.5" fill="none"/>
+            <circle cx="110" cy="60" r="6" fill="rgba(0,212,255,.7)"/>
+            <circle cx="125" cy="60" r="6" fill="rgba(0,212,255,.5)"/>
+            <circle cx="95" cy="60" r="6" fill="rgba(0,212,255,.5)"/>
+          </svg>
+          <span class="course-thumb-label">NLP / LLMs</span>
+        </div>
+        <div class="course-body">
+          <div class="course-meta">
+            <span class="course-level">Advanced</span>
+            <span class="course-duration">40 hours · 52 lessons</span>
+          </div>
+          <h3>Large Language Models: From Attention to ChatGPT</h3>
+          <p>Understand transformers at a mathematical level, fine-tune open-source LLMs, and build production RAG pipelines.</p>
+          <div class="course-footer">
+            <div class="course-instructor">
+              <div class="avatar-sm" style="background: linear-gradient(135deg,#9b5de5,#f43f5e);">JP</div>
+              <span class="instructor-name">Dr. James Park</span>
+            </div>
+            <div class="course-rating">★ <strong>4.9</strong> (3.1k)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course 4 -->
+      <div class="course-card">
+        <div class="course-thumb" style="background: linear-gradient(135deg, #1a0e06 0%, #431407 50%, #7c2d12 100%);">
+          <svg width="130" height="80" viewBox="0 0 130 80" fill="none">
+            <rect x="10" y="10" width="48" height="36" rx="6" fill="rgba(251,191,36,.1)" stroke="rgba(251,191,36,.4)" stroke-width="1.5"/>
+            <rect x="16" y="16" width="36" height="24" rx="3" fill="rgba(251,191,36,.15)"/>
+            <!-- image-like grid -->
+            <rect x="16" y="16" width="12" height="12" rx="1" fill="rgba(251,191,36,.4)"/>
+            <rect x="28" y="16" width="12" height="12" rx="1" fill="rgba(251,191,36,.2)"/>
+            <rect x="40" y="16" width="12" height="12" rx="1" fill="rgba(251,191,36,.5)"/>
+            <rect x="16" y="28" width="12" height="12" rx="1" fill="rgba(251,191,36,.3)"/>
+            <rect x="28" y="28" width="12" height="12" rx="1" fill="rgba(251,191,36,.6)"/>
+            <rect x="40" y="28" width="12" height="12" rx="1" fill="rgba(251,191,36,.2)"/>
+            <!-- arrow -->
+            <path d="M62 28 L78 28" stroke="rgba(251,191,36,.6)" stroke-width="2" marker-end="url(#a2)"/>
+            <text x="65" y="24" font-size="8" fill="rgba(251,191,36,.6)">CNN</text>
+            <!-- label box -->
+            <rect x="82" y="18" width="38" height="20" rx="4" fill="rgba(251,191,36,.2)" stroke="rgba(251,191,36,.6)" stroke-width="1.5"/>
+            <text x="101" y="32" font-size="8" fill="rgba(251,191,36,.9)" text-anchor="middle">Cat 🐱</text>
+            <text x="65" y="68" font-size="9" fill="rgba(251,191,36,.4)" text-anchor="middle">Computer Vision</text>
+          </svg>
+          <span class="course-thumb-label">Computer Vision</span>
+        </div>
+        <div class="course-body">
+          <div class="course-meta">
+            <span class="course-level">Intermediate</span>
+            <span class="course-duration">24 hours · 31 lessons</span>
+          </div>
+          <h3>Computer Vision with CNNs, YOLO & Diffusion Models</h3>
+          <p>From image classification to object detection and generative image synthesis — build systems that see.</p>
+          <div class="course-footer">
+            <div class="course-instructor">
+              <div class="avatar-sm" style="background: linear-gradient(135deg,#fbbf24,#f97316);">MR</div>
+              <span class="instructor-name">Maya Rodriguez</span>
+            </div>
+            <div class="course-rating">★ <strong>4.7</strong> (1.2k)</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Testimonials ──────────────────────────────────────────── -->
+<section id="testimonials">
+  <div class="testi-glow"></div>
+  <div class="container">
+    <div class="testi-header">
+      <span class="tag">Student Stories</span>
+      <h2 class="section-title">Learners who changed careers</h2>
+      <p class="section-sub">Real outcomes from real people. Not cherry-picked — these represent our average graduate.</p>
+    </div>
+    <div class="testi-grid">
+
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <blockquote>"The LLMs course was unlike anything I'd seen online. The instructors don't dumb it down — they treat you like an engineer. Landed a role at a Series B AI startup within 6 weeks of finishing."</blockquote>
+        <div class="testi-author">
+          <div class="avatar-md" style="background: linear-gradient(135deg,#4f8ef7,#9b5de5);">TN</div>
+          <div>
+            <div class="author-name">Tariq Nasser</div>
+            <div class="author-role">ML Engineer · ex-Marketing Manager</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <blockquote>"I had zero background in math or programming. The curriculum scaffolded everything so gradually I didn't notice how much I was learning. Now I run AI experiments at my own startup."</blockquote>
+        <div class="testi-author">
+          <div class="avatar-md" style="background: linear-gradient(135deg,#22c55e,#06b6d4);">EB</div>
+          <div>
+            <div class="author-name">Elena Bauer</div>
+            <div class="author-role">Founder, Bauer Labs · ex-Teacher</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <blockquote>"I was already a software engineer but felt lost around AI. The Computer Vision track gave me enough depth to lead the ML infra at my company. Worth every penny of the Pro plan."</blockquote>
+        <div class="testi-author">
+          <div class="avatar-md" style="background: linear-gradient(135deg,#f97316,#fbbf24);">CW</div>
+          <div>
+            <div class="author-name">Chris Wu</div>
+            <div class="author-role">Lead ML Engineer · Fintech</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ───────────────────────────────────────────────────── -->
+<section id="cta">
+  <div class="container">
+    <div class="cta-box">
+      <span class="tag" style="margin-bottom:24px; display:inline-flex;">Free forever · No credit card</span>
+      <h2>Start learning AI<br><span class="grad-text">today, for free.</span></h2>
+      <p>Join 48,000+ learners building the skills that define the next decade.</p>
+      <form class="cta-form" onsubmit="return false;">
+        <input type="email" placeholder="Enter your email address" />
+        <button class="btn btn-primary" type="submit">Get started free</button>
+      </form>
+      <p class="cta-note">No spam. Unsubscribe any time.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ────────────────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="logo"><span>Synapse</span> AI</a>
+        <p>The most rigorous AI education platform on the internet — designed for people who want to actually understand what they're building.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Learn</h4>
+        <ul>
+          <li><a href="#">All Courses</a></li>
+          <li><a href="#">Learning Paths</a></li>
+          <li><a href="#">Projects</a></li>
+          <li><a href="#">Certifications</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Synapse AI, Inc. All rights reserved.</span>
+      <span>Built with care for curious minds.</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
