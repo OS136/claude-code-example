@@ -37,6 +37,10 @@ Synapse is an educational platform dedicated to making AI learning accessible an
 └── .claude/           # Claude Code configuration and agents
 ```
 
+## 🔗 Live project: 
+
+https://claude-code-example.netlify.app/
+
 ## 🚀 Getting Started
 
 ### View the Website
